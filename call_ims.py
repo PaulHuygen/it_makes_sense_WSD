@@ -1,9 +1,16 @@
 #!/usr/bin/env python
-
 ################  CHANGES    #####################
 # 0.3 (7-Nov-2014) --> option to generate wn3.0 synsets
 # 0.4 (7-Dec-2014) --> tokens like <wf>they are</wf> are correctly matched (new function in align.py script)
 ##################
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import (
+         bytes, dict, int, list, object, range, str,
+         ascii, chr, hex, input, next, oct, open,
+         pow, round, super,
+         filter, map, zip)
+
 
 import sys
 import os
@@ -16,11 +23,15 @@ from tempfile import NamedTemporaryFile
 from align import align_lists #def align_lists(l1,ids,l2):
 from path_to_ims import PATH_TO_IMS
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
+
 ##Change these variables if you want to use your own trained models
-ims_models = '/home/izquierdo/ruben_github/it_makes_sense_WSD/ims/semcor30_wngloss_models' 
+#ims_models = '/home/izquierdo/ruben_github/it_makes_sense_WSD/ims/semcor30_wngloss_models' 
 #ims_models = '/home/izquierdo/ruben_github/it_makes_sense_WSD/ims/model_semcor30_lexkey'
-wordnet_dict_folder = '/home/izquierdo/wordnets/wordnet-3.0/dict/index.sense' 
-        
+#wordnet_dict_folder = '/home/izquierdo/wordnets/wordnet-3.0/dict/index.sense' 
 
 
 os.environ['LC_ALL'] = 'en_US.UTF-8' 
@@ -41,9 +52,11 @@ VERB = 'verb'
 def load_skeys_for_words():
     skeys_for_word = defaultdict(set)
     skey_to_synset = defaultdict(set)
-    my_index = wordnet_dict_folder #__wordnet171_index_sense
-    if os.path.exists(my_index):    
-        fd = open(my_index,'r')
+#    my_index = wordnet_dict_folder #__wordnet171_index_sense
+#    if os.path.exists(my_index):    
+#        fd = open(my_index,'r')
+    if os.path.exists(__wordnet171_index_sense):
+        fd = open(__wordnet171_index_sense,'r')
         for line in fd:
             fields = line.strip().split()
             skey = fields[0]
@@ -53,7 +66,8 @@ def load_skeys_for_words():
             skeys_for_word[word_pos].add(skey)
         fd.close()
     else:
-        print>>sys.stderr,'Wordnet index.sense file not found at',__wordnet171_index_sense
+#        print>>sys.stderr,'Wordnet index.sense file not found at',__wordnet171_index_sense
+        eprint('Wordnet index.sense file not found at {}'.format(__wordnet171_index_sense))
     return skeys_for_word, skey_to_synset
         
 
@@ -110,7 +124,8 @@ def parse_ims_annotated_sentence(this_line, list_tokens, list_token_ids):
     #We obtain for each new token what is the identifier in the original tokens (all lists are aligned)
     mapped_token_ids = align_lists(list_tokens,list_token_ids,new_tokens)
     if mapped_token_ids is None:
-        print>>sys.stderr,'ERROR!!! Matching tokens', list_tokens, list_token_ids,' SKIP!'
+#        print>>sys.stderr,'ERROR!!! Matching tokens', list_tokens, list_token_ids,' SKIP!'
+        eprint('ERROR!!! Matching tokens {} {} SKIP'.format(list_tokens, list_token_ids))
         return {}
     
     #Finally we create the object for each token id the list of possible senses
@@ -134,12 +149,14 @@ def call_as_subprocess(input_filename,is_there_pos):
     this_out.close()
     
     cmd = ['./testPlain.bash']
-    #cmd.append('models')    ##models folder must be inside the ims folder
-    #cmd.append('/home/izquierdo/ruben_github/it_makes_sense_WSD/ims/model_semcor30_lexkey')
-    cmd.append(ims_models)
+#    #cmd.append('models')    ##models folder must be inside the ims folder
+#    #cmd.append('/home/izquierdo/ruben_github/it_makes_sense_WSD/ims/model_semcor30_lexkey')
+#    cmd.append(ims_models)
+    cmd.append('models')    ##models folder must be inside the ims folder
     cmd.append(input_filename)
     cmd.append(this_out.name)
-    cmd.append(wordnet_dict_folder)
+#    cmd.append(wordnet_dict_folder)
+    cmd.append('lib/dict/index.sense')
     cmd.append('1 1') #is sentence splitted and tokenised
     if is_there_pos:
         cmd.append('1')
@@ -149,12 +166,15 @@ def call_as_subprocess(input_filename,is_there_pos):
     return_code = this_ims.wait()
     sentences_tagged = []
     if return_code != 0:
-        print>>sys.stderr,'Error with IMS at',PATH_TO_IMS
-        print>>sys.stderr,this_ims.stderr.read()
+#        print>>sys.stderr,'Error with IMS at',PATH_TO_IMS
+#        print>>sys.stderr,this_ims.stderr.read()
+        eprint('Error with IMS at {}'.format(PATH_TO_IMS))
+        eprint(this_ims.stderr.read())
     else:
         f_in = open(this_out.name,'r')
         for line in f_in:
-            sentences_tagged.append(line.decode(__encoding__).strip())
+#            sentences_tagged.append(line.decode(__encoding__).strip())
+            sentences_tagged.append(line.strip())
         f_in.close()
     
     os.remove(this_out.name)
@@ -175,7 +195,7 @@ def load_mapping(from_version, to_version):
             possible_synsets_conf = []
             
             #This is just to parse 00005388 00525453 0.421 01863970 0.579 
-            for n in range((len(fields)-1)/2):
+            for n in range((len(fields)-1)//2):
                 possible_synsets_conf.append((fields[2*n+1],float(fields[2*n+2])))
             synset_from = fields[0]
             synset_to = sorted(possible_synsets_conf,key = lambda t: -t[1])[0][0]
@@ -212,7 +232,8 @@ def map_skey171_to_synset30(skey171, map_skey171_syn171, map_wn171_wn30):
 def call_ims(this_input, this_output, use_pos,use_morphofeat,map_to_wn30):
     knaf_obj = KafNafParser(this_input)
 
-    print>>sys.stderr,'Reading the input ...'
+#    print>>sys.stderr,'Reading the input ...'
+    eprint('Reading the input ...')
     ###########################    
     #Mapping from token id ==> (term_id, lemma, pos)
     ###########################
@@ -258,9 +279,11 @@ def call_ims(this_input, this_output, use_pos,use_morphofeat,map_to_wn30):
         for token_id, token_text in sentence:
             if use_pos or use_morphofeat:
                 term_id,lemma,pos = tid_term_pos_for_token_id[token_id]
-                this_temp.write(token_text.encode(__encoding__)+'/'+pos.encode(__encoding__)+' ')
+#                this_temp.write(token_text.encode(__encoding__)+'/'+pos.encode(__encoding__)+' ')
+                this_temp.write('{}/{}'.format(token_text, pos))
             else:
-                this_temp.write(token_text.encode(__encoding__)+' ')
+#                this_temp.write(token_text.encode(__encoding__)+' ')
+                this_temp.write('{} '.format(token_text))
         this_temp.write('\n')
     this_temp.close()
     ###########################
@@ -271,7 +294,8 @@ def call_ims(this_input, this_output, use_pos,use_morphofeat,map_to_wn30):
     ###########################
     # Calling to 
     ###########################
-    print>>sys.stderr,'Calling to IMS at',PATH_TO_IMS,'...'
+#    print>>sys.stderr,'Calling to IMS at',PATH_TO_IMS,'...'
+    eprint('Calling to IMS at {} ...'.format(PATH_TO_IMS))
     sentences_tagged = call_as_subprocess(this_temp.name,use_pos or use_morphofeat)
     os.remove(this_temp.name)
     ###########################
@@ -280,9 +304,11 @@ def call_ims(this_input, this_output, use_pos,use_morphofeat,map_to_wn30):
     if map_to_wn30:
         map_wn171_wn30 = load_mapping('171','30')
     
-    print>>sys.stderr,'Adding external references and writing the output ...'
+#    print>>sys.stderr,'Adding external references and writing the output ...'
+    eprint('Adding external references and writing the output ...')
     for n, sentence in enumerate(sentences_tagged):
-        print>>sys.stderr,'Running sentence',n#,sentence
+#        print>>sys.stderr,'Running sentence',n#,sentence
+        eprint('Running sentence {}'.format(n)) #,sentence
         list_tokens = []
         list_token_ids = []
         for token_id, token_text in sentences[n]:
@@ -293,7 +319,8 @@ def call_ims(this_input, this_output, use_pos,use_morphofeat,map_to_wn30):
         for token_id, senses in senses_for_token_id.items():
             answered_for_this_token = set()
             if not token_id in tid_term_pos_for_token_id:
-                print>>sys.stderr,'WARNING!!! Token id:',token_id,' Senses:', senses, ' Not found in any term !!!'
+#                print>>sys.stderr,'WARNING!!! Token id:',token_id,' Senses:', senses, ' Not found in any term !!!'
+                eprint('WARNING!!! Token id: {} Senses: {};  not found in any term !!!'.format(token_id, senses))
                 continue
             term_id,_,_ = tid_term_pos_for_token_id[token_id]   # termid, lemma, pos
             for sensekey, confidence in senses:
@@ -306,8 +333,8 @@ def call_ims(this_input, this_output, use_pos,use_morphofeat,map_to_wn30):
                     resource = 'WordNet-3.0'
                 else:
                     reference = sensekey
-                    #resource = 'ItMakesSense#WN-1.7.1'
-                    resource = 'IMS_WN30+WN_Gloss30'
+                    resource = 'ItMakesSense#WN-1.7.1'
+                    #resource = 'IMS_WN30+WN_Gloss30'
                 
                 if reference is not None:
                     new_ext_ref.set_reference(reference)
@@ -332,8 +359,8 @@ def call_ims(this_input, this_output, use_pos,use_morphofeat,map_to_wn30):
                         resource = 'WordNet-3.0'
                     else:
                         reference = possible_skey
-                        #resource = 'ItMakesSense#WN-1.7.1'
-                        resource = 'IMS_WN30+WN_Gloss30'
+                        resource = 'ItMakesSense#WN-1.7.1'
+                        #resource = 'IMS_WN30+WN_Gloss30'
                 
                     if reference is not None:
                         new_ext_ref.set_reference(reference)
@@ -359,7 +386,8 @@ def call_ims(this_input, this_output, use_pos,use_morphofeat,map_to_wn30):
     
     knaf_obj.add_linguistic_processor('terms',my_lp)
     
-    knaf_obj.dump(this_output)
+#    knaf_obj.dump(this_output)
+    knaf_obj.dump()
         
     
     

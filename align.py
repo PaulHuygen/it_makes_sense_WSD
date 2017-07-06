@@ -1,8 +1,19 @@
 #!/usr/bin/env python
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import (
+         bytes, dict, int, list, object, range, str,
+         ascii, chr, hex, input, next, oct, open,
+         pow, round, super,
+         filter, map, zip)
+
 import sys
 l1 = ['its','true','they are', 'offering','money']
 ids = ['a','b','c','d','e','f']
 l2 = ['its','true','they','are', 'offering','money']
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 def align_lists(l1,ids,l2):
     """
@@ -15,6 +26,7 @@ def align_lists(l1,ids,l2):
     ids = ['a','b','c','d','e','f']
     l2 = ['its','true','they','are', 'offering','money']
     """
+
     ids2 = []
 
     pos1 = offset1 = 0
@@ -24,7 +36,8 @@ def align_lists(l1,ids,l2):
         ele_to_compare = l1[pos1].replace(' ','')
         string_compare = ele_to_compare[offset1:offset1+len(this_ele)]
         if this_ele != string_compare:
-            print>>sys.stderr,'Impossible to match #'+this_ele.encode('utf-8')+'# with #'+string_compare.encode('utf-8')+'#'
+#            print>>sys.stderr,'Impossible to match #'+this_ele.encode('utf-8')+'# with #'+string_compare.encode('utf-8')+'#'
+            eprint('Impossible to match #'+this_ele.encode('utf-8')+'# with #'+string_compare.encode('utf-8')+'#')
             ids2 = None
             break
         ids2.append(ids[pos1])
@@ -44,12 +57,15 @@ if __name__ == '__main__':
     ids = ['a','b','c','d','e','f']
     l2 = ['its','true','they','are', 'offering','money']
     ids2 = align_lists(l1,ids,l2)
-    print 'L1:',l1
+    print('L1:{}'.format(l1))
     for n in range(len(l1)):
-        print ids[n],'-->',l1[n]
-    print 'L2:', l2
+#        print ids[n],'-->',l1[n]
+        print('{}-->{}'.format(ids[n],l1[n]))
+#    print 'L2:', l2
+    print('L2:{}'.format(l2))
 
     for n in range(len(l2)):
-        print l2[n], ids2[n]
+        print('{},{}'.format(l2[n], ids2[n]))
+#        print l2[n], ids2[n]
     
 

@@ -1,0 +1,59 @@
+#!/bin/bash
+thisdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $thisdir
+#
+# Tarballs and their url's
+#
+ims_ball="IMS_v0.9.2.1.tar.gz"
+ims_urldir="http://www.comp.nus.edu.sg/~nlp/sw"
+ims_lib_ball="lib.tar.gz"
+ims_lib_urldir="http://www.comp.nus.edu.sg/~nlp/sw"
+ims_models_ball="models.tar.gz"
+wordnet_version="1.7.1"
+wordnet_urldir="http://wordnetcode.princeton.edu/${wordnet_version}"
+wordnet_ball="WordNet-${wordnet_version}.tar.gz"
+
+function get_and_unpack_ball () {
+url_dir=$1
+ball=$2
+wget ${url_dir}/${ball}
+tar -xzf ${ball}
+rm ${BALL}
+}
+
+
+# For the main package
+
+get_and_unpack_ball ${ims_urldir} ${ims_ball}
+mv ims_0.9.2.1 ims
+
+cd ims/
+
+# For the library
+cd ims/
+chmod +x testPlain.bash
+get_and_unpack_ball ${ims_lib_urldir} ${ims_lib_ball}
+
+# For the models
+get_and_unpack_ball ${ims_lib_urldir} ${ims_models_ball}
+
+cd ${thisdir}
+
+# TODO: find solution for path_to_ims.py.
+
+mkdir resources
+cd resources
+
+#For WordNet171
+get_and_unpack_ball ${wordnet_urldir} ${wordnet_ball}
+
+#For the mappings between wn versions
+wget -O mappings.tgz http://nlp.lsi.upc.edu/tools/download-map.php
+tar xzf mappings.tgz
+mv mappings-upc-2007/ mappings-upc
+rm mappings.tgz
+
+cd ${thisdir}
+
+#For the KafNafPArserPy
+pip install KafNafParserPy
