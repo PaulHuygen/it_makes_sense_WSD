@@ -21,7 +21,9 @@ from subprocess import Popen, PIPE
 from KafNafParserPy import *
 from tempfile import NamedTemporaryFile
 from align import align_lists #def align_lists(l1,ids,l2):
-from path_to_ims import PATH_TO_IMS
+# from path_to_ims import PATH_TO_IMS
+PATH_TO_IMS = os.path.join(os.environ['thisdir'], 'ims')
+
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)

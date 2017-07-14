@@ -1,5 +1,5 @@
 #!/bin/bash
-thisdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export thisdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd ${thisdir}
 python call_ims.py -ili30
