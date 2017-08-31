@@ -1,6 +1,18 @@
 #!/bin/bash
-export thisdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
+modname=it_makes_sense_WSD
+#
+# Find the path to this module
+#
+if
+  [ -z ${MODROOT+x} ]
+then
+  # Find out path ourselves
+  thisdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+else
+  thisdir=$MODROOT/$modname
+fi
+thisscript=${thisdir}/run
+export thisdir
 cd ${thisdir}
 python call_ims.py -ili30
 
