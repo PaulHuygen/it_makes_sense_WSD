@@ -7,7 +7,7 @@ cd $thisdir
 ims_ball="IMS_v0.9.2.1.tar.gz"
 ims_urldir="http://www.comp.nus.edu.sg/~nlp/sw"
 ims_lib_ball="lib.tar.gz"
-ims_lib_urldir="http://www.comp.nus.edu.sg/~nlp/sw"
+#ims_lib_urldir="http://www.comp.nus.edu.sg/~nlp/sw"
 ims_models_ball="models.tar.gz"
 wordnet_version="1.7.1"
 wordnet_urldir="http://wordnetcode.princeton.edu/${wordnet_version}"
@@ -18,7 +18,7 @@ url_dir=$1
 ball=$2
 wget ${url_dir}/${ball}
 tar -xzf ${ball}
-rm ${BALL}
+rm ${ball}
 }
 
 
@@ -27,31 +27,35 @@ rm ${BALL}
 get_and_unpack_ball ${ims_urldir} ${ims_ball}
 mv ims_0.9.2.1 ims
 
-cd ims/
-
 # For the library
-cd ims/
+cd ${thisdir}/ims
 chmod +x testPlain.bash
-get_and_unpack_ball ${ims_lib_urldir} ${ims_lib_ball}
+get_and_unpack_ball ${ims_urldir} ${ims_lib_ball}
 
 # For the models
-get_and_unpack_ball ${ims_lib_urldir} ${ims_models_ball}
+get_and_unpack_ball ${ims_urldir} ${ims_models_ball}
 
 cd ${thisdir}
 
 # TODO: find solution for path_to_ims.py.
 
-mkdir resources
-cd resources
+# Temporary solution while url http://nlp.lsi.upc.edu/tools/download-map.php is broken.
 
-#For WordNet171
-get_and_unpack_ball ${wordnet_urldir} ${wordnet_ball}
+wget http://kyoto.let.vu.nl/~huygen/ims_resources.tgz
+tar -xzf ims_resources.tgz
+rm ims_resources.tgz
 
-#For the mappings between wn versions
-wget -O mappings.tgz http://nlp.lsi.upc.edu/tools/download-map.php
-tar xzf mappings.tgz
-mv mappings-upc-2007/ mappings-upc
-rm mappings.tgz
+#mkdir resources
+#cd resources
+#
+##For WordNet171
+#get_and_unpack_ball ${wordnet_urldir} ${wordnet_ball}
+#
+##For the mappings between wn versions
+#wget -O mappings.tgz http://nlp.lsi.upc.edu/tools/download-map.php
+#tar xzf mappings.tgz
+# mv mappings-upc-2007/ mappings-upc
+#rm mappings.tgz
 
 cd ${thisdir}
 
