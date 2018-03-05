@@ -41,7 +41,7 @@ cd ${thisdir}
 
 # Temporary solution while url http://nlp.lsi.upc.edu/tools/download-map.php is broken.
 
-wget http://kyoto.let.vu.nl/~huygen/ims_resources.tgz
+wget http://kyoto.let.vu.nl/nlpp_repo/ims_resources.tgz
 tar -xzf ims_resources.tgz
 rm ims_resources.tgz
 
