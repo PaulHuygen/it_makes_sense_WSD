@@ -6,6 +6,8 @@ cd $thisdir
 #
 ims_ball="IMS_v0.9.2.1.tar.gz"
 ims_urldir="http://www.comp.nus.edu.sg/~nlp/sw"
+# ims_second_urldir="http://kyoto.let.vu.nl~/newsreader/it_makes_sense_WSD"
+ims_second_urldir="http://kyoto.let.vu.nl/nlpp_repo/it_makes_sense_WSD"
 ims_lib_ball="lib.tar.gz"
 #ims_lib_urldir="http://www.comp.nus.edu.sg/~nlp/sw"
 ims_models_ball="models.tar.gz"
@@ -13,27 +15,44 @@ wordnet_version="1.7.1"
 wordnet_urldir="http://wordnetcode.princeton.edu/${wordnet_version}"
 wordnet_ball="WordNet-${wordnet_version}.tar.gz"
 
+# Note: it is not always possible to download the models from their proper location. Therefore,
+# as a hack, download the models from a secret storage using a secret key.
+
 function get_and_unpack_ball () {
-url_dir=$1
-ball=$2
-wget ${url_dir}/${ball}
-tar -xzf ${ball}
-rm ${ball}
+    url_dir=$1
+    second_url_dir=$2
+    ball=$3
+    wget ${url_dir}/${ball}
+    result=$?
+    if
+       [ $result -gt 0 ]
+    then
+       wget ${second_url_dir}/${ball}
+       result=$?
+    fi
+    if
+       [ $result == 0 ]
+    then
+	tar -xzf ${ball}
+	rm ${ball}
+    else
+	echo "Cannot download $ball"
+    fi
 }
 
 
 # For the main package
 
-get_and_unpack_ball ${ims_urldir} ${ims_ball}
+get_and_unpack_ball ${ims_urldir} ${ims_second_urldir} ${ims_ball}
 mv ims_0.9.2.1 ims
 
 # For the library
 cd ${thisdir}/ims
 chmod +x testPlain.bash
-get_and_unpack_ball ${ims_urldir} ${ims_lib_ball}
+get_and_unpack_ball ${ims_urldir} ${ims_second_urldir} ${ims_lib_ball}
 
 # For the models
-get_and_unpack_ball ${ims_urldir} ${ims_models_ball}
+get_and_unpack_ball ${ims_urldir} ${ims_second_urldir} ${ims_models_ball}
 
 cd ${thisdir}
 
