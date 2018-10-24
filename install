@@ -11,6 +11,7 @@ ims_second_urldir="http://kyoto.let.vu.nl/nlpp_repo/it_makes_sense_WSD"
 ims_lib_ball="lib.tar.gz"
 #ims_lib_urldir="http://www.comp.nus.edu.sg/~nlp/sw"
 ims_models_ball="models.tar.gz"
+alt_ims_models_ball="20181023_models.tar.gz"
 wordnet_version="1.7.1"
 wordnet_urldir="http://wordnetcode.princeton.edu/${wordnet_version}"
 wordnet_ball="WordNet-${wordnet_version}.tar.gz"
@@ -52,7 +53,19 @@ chmod +x testPlain.bash
 get_and_unpack_ball ${ims_urldir} ${ims_second_urldir} ${ims_lib_ball}
 
 # For the models
-get_and_unpack_ball ${ims_urldir} ${ims_second_urldir} ${ims_models_ball}
+# get_and_unpack_ball ${ims_urldir} ${ims_second_urldir} ${ims_models_ball}
+wget ${ims_second_url_dir}/${alt_ims_models_ball}
+result=$?
+if
+   [ $result -gt 0 ]
+then
+    echo "Cannot download from ${ims_second_url_dir}/${alt_ims_models_ball}"
+else
+    tar -xzf ${alt_ims_models_ball}
+    rm ${alt_ims_models_ball}
+fi
+
+
 
 cd ${thisdir}
 
