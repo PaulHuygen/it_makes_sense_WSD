@@ -54,7 +54,7 @@ get_and_unpack_ball ${ims_urldir} ${ims_second_urldir} ${ims_lib_ball}
 
 # For the models
 # get_and_unpack_ball ${ims_urldir} ${ims_second_urldir} ${ims_models_ball}
-wget ${ims_second_url_dir}/${alt_ims_models_ball}
+wget ${ims_second_urldir}/${alt_ims_models_ball}
 result=$?
 if
    [ $result -gt 0 ]
@@ -73,7 +73,7 @@ cd ${thisdir}
 
 # Temporary solution while url http://nlp.lsi.upc.edu/tools/download-map.php is broken.
 
-wget http://kyoto.let.vu.nl/nlpp_repo/ims_resources.tgz
+wget http://kyoto.let.vu.nl/nlpp_repo/it_makes_sense_WSD/ims_resources.tgz
 tar -xzf ims_resources.tgz
 rm ims_resources.tgz
 
