@@ -5,7 +5,7 @@ res=0
 #
 # Tarballs and their url's
 #
-ims_resourcespackage="ims_v0.9.2.1"
+ims_resourcespackage="ims_0.9.2.1"
 ims_resourcespackage_ballname="IMS_v0.9.2.1"
 ims_ball="${ims_resourcespackage_ballname}.tar.gz"
 ims_urldir="http://www.comp.nus.edu.sg/~nlp/sw"
